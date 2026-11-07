@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es-CO" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>DomiRest · Sabor & Punto</title>
+  <meta name="description" content="DomiRest: el sabor de Montería a tu puerta. Pide, sigue tu domicilio en vivo y disfruta." />
+  <meta name="theme-color" content="#FFF6EC" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#120E1C" media="(prefers-color-scheme: dark)" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="application-name" content="DomiRest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="DomiRest" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/icons/icon-512.png" />
+
+  <!-- Fuentes con personalidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Outfit:wght@300..700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet local (mapas sin API key) -->
+  <link rel="stylesheet" href="assets/vendor/leaflet.css" />
+
+  <!-- Sistema de diseño -->
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+
+  <script>
+    // Evita el destello de tema al cargar
+    (function () {
+      try {
+        var saved = localStorage.getItem("domirest_theme");
+        var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+
+  <div id="app">
+    <div class="boot-splash">
+      <div class="brand-mark">D</div>
+      <span class="boot-word">DomiRest</span>
+    </div>
+  </div>
+
+  <div class="chrome" id="chrome">
+    <div class="chrome-inner">
+      <button class="cart-fab hidden" id="cart-fab" aria-label="Abrir carrito">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 7h12l1 14H5L6 7Z"/><path d="M9 7a3 3 0 0 1 6 0"/>
+        </svg>
+        <span class="cart-count" id="cart-count">0</span>
+        <span class="fab-ring" aria-hidden="true"></span>
+      </button>
+      <nav class="bottom-nav hidden" id="bottom-nav" aria-label="Navegación principal"></nav>
+    </div>
+  </div>
+
+  <div id="sheet-root" class="sheet-root" aria-live="polite"></div>
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div class="fx-root" id="fx-root" aria-hidden="true"></div>
+
+  <script src="assets/vendor/leaflet.js"></script>
+  <script src="assets/vendor/qrcode.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

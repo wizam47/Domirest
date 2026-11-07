@@ -1,0 +1,133 @@
+/* ============================================================
+   DomiRest · Sistema de diseño
+   Paleta cálida inspirada en la cocina costeña: crema, ciruela,
+   coral ardiente, mango y menta. Modo oscuro con acentos vivos.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+
+  /* Marca */
+  --coral: #ff5a36;
+  --coral-deep: #e8441f;
+  --mango: #ffb627;
+  --mint: #2ec4a6;
+  --mint-deep: #13997f;
+  --plum: #1f1b2d;
+  --sky: #5b8def;
+  --rose: #ff7a9c;
+
+  /* Superficies */
+  --bg: #fff6ec;
+  --bg-deep: #f7e8d8;
+  --surface: #ffffff;
+  --surface-2: #fffaf4;
+  --surface-3: #f8eee3;
+  --glass: rgba(255, 250, 244, 0.82);
+  --glass-strong: rgba(255, 250, 244, 0.95);
+
+  /* Texto */
+  --heading: #1f1b2d;
+  --text: #423a50;
+  --muted: #8d8299;
+  --muted-2: #b2a8ba;
+  --on-color: #fffaf4;
+
+  /* Líneas y sombras */
+  --line: rgba(31, 27, 45, 0.08);
+  --line-strong: rgba(31, 27, 45, 0.14);
+  --shadow-xs: 0 2px 8px rgba(64, 36, 24, 0.05);
+  --shadow-sm: 0 6px 18px rgba(64, 36, 24, 0.07);
+  --shadow-md: 0 18px 40px -20px rgba(64, 36, 24, 0.28);
+  --shadow-lg: 0 30px 70px -30px rgba(64, 36, 24, 0.35);
+  --shadow-coral: 0 14px 30px -10px rgba(255, 90, 54, 0.55);
+
+  /* Gradientes */
+  --grad: linear-gradient(135deg, #ff5a36 0%, #ff8629 52%, #ffb627 100%);
+  --grad-rev: linear-gradient(135deg, #ffb627 0%, #ff5a36 100%);
+  --grad-plum: linear-gradient(150deg, #2b2340 0%, #1c172b 60%, #2a1830 100%);
+  --grad-mint: linear-gradient(135deg, #2ec4a6 0%, #79e0c6 100%);
+  --grad-soft: linear-gradient(135deg, rgba(255, 90, 54, 0.12), rgba(255, 182, 39, 0.16));
+  --grad-cream: linear-gradient(180deg, rgba(255, 246, 236, 0) 0%, rgba(255, 246, 236, 0.9) 70%);
+
+  /* Estados */
+  --success: #13997f;
+  --success-bg: #e2faf3;
+  --warn: #c98100;
+  --warn-bg: #fff4d6;
+  --danger: #e0443b;
+  --danger-bg: #ffe9e7;
+  --info: #3f74e0;
+  --info-bg: #e8efff;
+
+  /* Forma y movimiento */
+  --r-xs: 10px;
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+  --r-full: 999px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: 160ms;
+  --t: 280ms;
+  --t-slow: 520ms;
+
+  /* Layout */
+  --app-w: 470px;
+  --nav-h: 68px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Tipografía */
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Outfit", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --coral: #ff6b47;
+  --coral-deep: #ff4f2a;
+  --mango: #ffc44d;
+  --mint: #48d9b8;
+  --mint-deep: #2ec4a6;
+  --sky: #77a4ff;
+  --rose: #ff8fae;
+
+  --bg: #120e1c;
+  --bg-deep: #0c0914;
+  --surface: #1d1730;
+  --surface-2: #241c3a;
+  --surface-3: #2c2345;
+  --glass: rgba(29, 23, 48, 0.8);
+  --glass-strong: rgba(29, 23, 48, 0.96);
+
+  --heading: #fbf3e9;
+  --text: #ddd2e7;
+  --muted: #a99fbb;
+  --muted-2: #7d728f;
+  --on-color: #1a1428;
+
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --shadow-xs: 0 2px 10px rgba(0, 0, 0, 0.28);
+  --shadow-sm: 0 8px 22px rgba(0, 0, 0, 0.32);
+  --shadow-md: 0 22px 48px -20px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 34px 80px -30px rgba(0, 0, 0, 0.82);
+  --shadow-coral: 0 16px 36px -12px rgba(255, 90, 54, 0.55);
+
+  --grad-soft: linear-gradient(135deg, rgba(255, 107, 71, 0.16), rgba(255, 196, 77, 0.12));
+  --grad-cream: linear-gradient(180deg, rgba(18, 14, 28, 0) 0%, rgba(18, 14, 28, 0.94) 70%);
+
+  --success: #48d9b8;
+  --success-bg: rgba(72, 217, 184, 0.14);
+  --warn: #ffc44d;
+  --warn-bg: rgba(255, 196, 77, 0.14);
+  --danger: #ff7a72;
+  --danger-bg: rgba(255, 122, 114, 0.14);
+  --info: #8db1ff;
+  --info-bg: rgba(141, 177, 255, 0.14);
+}
