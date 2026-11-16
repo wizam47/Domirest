@@ -1,5 +1,5 @@
 /* Service worker de DomiRest: shell offline y caché de estáticos. */
-const CACHE = "domirest-v2";
+const CACHE = "domirest-v3";
 const SHELL = [
   "/",
   "/manifest.json",
@@ -10,6 +10,7 @@ const SHELL = [
   "/js/app.js",
   "/js/api.js",
   "/js/icons.js",
+  "/js/invoice.js",
   "/js/maps.js",
   "/js/pwa.js",
   "/js/router.js",

@@ -5,6 +5,7 @@ PWA de domicilios para presentar en vivo desde el celular. Incluye el flujo comp
 ## Stack
 
 - **Backend:** Flask, Flask-SQLAlchemy, SQLAlchemy y sesiones con cookies HTTP-only.
+- **Facturas:** PDF A4 generado con `fpdf2` (sin dependencias del sistema) y número derivado del pedido, sin migraciones.
 - **Base de datos:** SQLite por defecto (`backend/domirest.db`); MySQL u otra URL de SQLAlchemy mediante `DATABASE_URL`.
 - **Frontend:** HTML, CSS y JavaScript vanilla con módulos ES. Sin frameworks ni build.
 - **Mapas:** Leaflet local + OpenStreetMap, sin API key.
@@ -57,7 +58,7 @@ La pantalla de acceso también tiene botones de entrada directa para cada rol. E
 
 ## Qué se puede demostrar
 
-- **Cliente:** bienvenida, onboarding, menú con búsqueda y filtros, favoritos, carrito, checkout, pago simulado, seguimiento en mapa y calificación.
+- **Cliente:** bienvenida, onboarding, menú con búsqueda y filtros, favoritos, carrito, checkout, pago simulado, seguimiento en mapa, calificación y **factura en PDF** al pagar.
 - **Administrador:** KPIs del día, ventas, gráfica por hora, pedidos recientes, comandas con drag-and-drop y CRUD de productos.
 - **Domiciliario:** disponibilidad, entregas activas, detalle con mapa, avance de estado, confirmación de entrega e historial con ganancias.
 - **PWA:** tema claro/oscuro, instalación en Android/iOS, shell offline, actualización del service worker, banner de instalación y compartir con enlace o QR.
@@ -77,7 +78,7 @@ La pantalla de acceso también tiene botones de entrada directa para cada rol. E
 3. Elige **Agregar a pantalla de inicio**.
 4. Toca **Agregar** y abre DomiRest como una app.
 
-El banner de instalación se oculta automáticamente si la app ya se abrió en modo standalone o si el sistema no permite el aviso. En iOS muestra la guía paso a paso.
+El banner de instalación se oculta automáticamente si la app ya se abrió en modo standalone o si el sistema no permite el aviso. En iOS muestra la guía paso a paso. También puedes entrar a **Perfil → Instalar app** para abrir el instalador nativo o la guía.
 
 ## Compartir el enlace y el QR
 
@@ -180,6 +181,8 @@ python backend\app.py
 - `POST /api/auth/demo/<client|admin|courier>`
 - `GET /api/categories`, `GET /api/products`, `GET /api/products?all=1`
 - `GET /api/orders`, `POST /api/orders`, `GET /api/orders/:id`
+- `GET /api/orders/:id/invoice` (datos para la vista previa)
+- `GET /api/orders/:id/invoice.pdf` (PDF de la factura)
 - `POST /api/orders/:id/status`, `POST /api/orders/:id/assign`
 - `POST /api/orders/:id/rate`, `GET /api/orders/:id/repeat`
 - `GET /api/admin/stats`, `GET /api/admin/orders`, `GET /api/admin/recent`, `GET /api/admin/couriers`
@@ -195,6 +198,7 @@ Domirest/
 ├─ backend/
 │  ├─ app.py              # fábrica Flask, auto-seed, headers PWA y servidor
 │  ├─ config.py           # SQLite/MySQL, producción y cookies
+│  ├─ invoices.py         # datos y PDF de la factura
 │  ├─ models.py           # usuarios, menú y pedidos
 │  ├─ seed.py             # datos demo y auto-siembra no destructiva
 │  ├─ requirements.txt

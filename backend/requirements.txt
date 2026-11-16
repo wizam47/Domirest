@@ -4,3 +4,4 @@ SQLAlchemy>=2.0,<3
 PyMySQL>=1.1,<2
 gunicorn>=23,<24
 segno>=1.6,<2
+fpdf2>=2.8,<3

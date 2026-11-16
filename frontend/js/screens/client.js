@@ -31,6 +31,7 @@ import {
   RESTAURANT,
 } from "../maps.js";
 import { navigate, refreshCartUI, reload } from "../router.js";
+import { downloadInvoice, invoiceNumber, openInvoiceSheet } from "../invoice.js";
 import {
   closeSheet,
   confetti,
@@ -1113,6 +1114,23 @@ export async function paymentScreen() {
             <p>Tu ${paymentLabel === "Efectivo" ? "pedido será pagado al recibir" : "pago simulado fue aprobado"}. La cocina ya recibió tu orden.</p>
             <div class="success-amount">${money(order.total)}</div>
             <span class="tiny muted">Pedido ${escapeHtml(order.code)} · Llega en ~${order.estimated_minutes} min</span>
+            <div class="invoice-success-card">
+              <div class="isc-head">
+                <span class="isc-icon" aria-hidden="true">${icon("receipt", 17)}</span>
+                <div class="isc-copy">
+                  <b>Factura generada</b>
+                  <span>${invoiceNumber(order)}</span>
+                </div>
+              </div>
+              <div class="isc-actions">
+                <button class="btn btn-ghost btn-sm" type="button" data-open-invoice>
+                  ${icon("eye", 15)} Ver factura
+                </button>
+                <button class="btn btn-primary btn-sm" type="button" data-download-invoice>
+                  ${icon("download", 15)} Descargar PDF
+                </button>
+              </div>
+            </div>
             <button class="btn btn-primary btn-lg" id="go-tracking" style="margin-top:14px;min-width:240px">
               ${icon("bike", 19)} Ver seguimiento en vivo
             </button>
@@ -1124,7 +1142,23 @@ export async function paymentScreen() {
           clearTimeout(redirectTimer);
           navigate(`tracking/${order.id}`);
         });
-        redirectTimer = setTimeout(() => navigate(`tracking/${order.id}`), 3200);
+        const stopRedirect = () => {
+          if (redirectTimer) {
+            clearTimeout(redirectTimer);
+            redirectTimer = null;
+          }
+        };
+        const invoiceCard = stage.querySelector(".invoice-success-card");
+        invoiceCard?.addEventListener("pointerdown", stopRedirect, { passive: true });
+        stage.querySelector("[data-open-invoice]")?.addEventListener("click", () => {
+          stopRedirect();
+          openInvoiceSheet(order);
+        });
+        stage.querySelector("[data-download-invoice]")?.addEventListener("click", (event) => {
+          stopRedirect();
+          downloadInvoice(order.id, event.currentTarget);
+        });
+        redirectTimer = setTimeout(() => navigate(`tracking/${order.id}`), 5200);
       };
 
       const createOrder = async () => {
@@ -1287,6 +1321,23 @@ function trackCourierHTML(order) {
     </div>`;
 }
 
+function invoiceSlotHTML(order) {
+  if (order.status === "cancelado" || order.payment_status === "cancelado") return "";
+  return `
+    <div class="invoice-access">
+      <div class="ia-copy">
+        <span class="ia-icon" aria-hidden="true">${icon("receipt", 17)}</span>
+        <div>
+          <b>Factura de tu pedido</b>
+          <span>${invoiceNumber(order)} · ${PAYMENT_LABEL[order.payment_method] || "Pago"}</span>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-sm" type="button" data-invoice="${order.id}">
+        ${icon("eye", 14)} Factura
+      </button>
+    </div>`;
+}
+
 export async function trackingScreen({ params }) {
   let order;
   try {
@@ -1342,6 +1393,8 @@ export async function trackingScreen({ params }) {
     </div>
 
     <div id="track-courier">${trackCourierHTML(order)}</div>
+
+    <div id="track-invoice-slot">${invoiceSlotHTML(order)}</div>
 
     <div class="order-mini" style="margin-top:12px">
       <div class="om-thumbs">
@@ -1399,6 +1452,8 @@ export async function trackingScreen({ params }) {
         if (timeline) timeline.innerHTML = timelineHTML(nextOrder);
         const courier = root.querySelector("#track-courier");
         if (courier) courier.innerHTML = trackCourierHTML(nextOrder);
+        const invoiceSlot = root.querySelector("#track-invoice-slot");
+        if (invoiceSlot) invoiceSlot.innerHTML = invoiceSlotHTML(nextOrder);
         const rating = root.querySelector("#track-rating-slot");
         if (rating) {
           rating.innerHTML = ratingSlotHTML(nextOrder);
@@ -1410,6 +1465,11 @@ export async function trackingScreen({ params }) {
       };
 
       root.querySelector("[data-back]")?.addEventListener("click", () => navigate("orders"));
+
+      root.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-invoice]");
+        if (button) openInvoiceSheet(currentOrder);
+      });
 
       setTimeout(() => {
         mapCtx = createTrackingMap(root.querySelector("#track-map"), order);
@@ -1553,9 +1613,14 @@ function orderCardHTML(order) {
   const summary =
     names.length > 2 ? `${names.slice(0, 2).join(", ")} +${names.length - 2}` : names.join(", ");
   const active = !["entregado", "cancelado"].includes(order.status);
+  const invoiceAction =
+    order.status !== "cancelado"
+      ? `<button class="btn btn-ghost btn-sm" data-invoice="${order.id}">${icon("receipt", 14)} Factura</button>`
+      : "";
   const actions = active
     ? `<button class="btn btn-primary btn-sm" data-track="${order.id}">Seguir pedido</button>
-       <button class="btn btn-ghost btn-sm" data-repeat="${order.id}">${icon("refresh", 14)} Repetir</button>`
+       <button class="btn btn-ghost btn-sm" data-repeat="${order.id}">${icon("refresh", 14)} Repetir</button>
+       ${invoiceAction}`
     : `<button class="btn btn-ghost btn-sm" data-repeat="${order.id}">${icon("refresh", 14)} Repetir</button>
        ${
          order.status === "entregado"
@@ -1563,7 +1628,8 @@ function orderCardHTML(order) {
              ? `<span class="rate-inline">${icon("star", 11)} ${order.rating}.0</span>`
              : `<button class="btn btn-soft btn-sm" data-rate="${order.id}">Calificar</button>`
            : ""
-       }`;
+       }
+       ${invoiceAction}`;
 
   return `
     <article class="order-card" style="--i:0">
@@ -1655,6 +1721,10 @@ export async function ordersScreen() {
         list.querySelectorAll("[data-repeat]").forEach((button) =>
           button.addEventListener("click", () => repeatOrder(Number(button.dataset.repeat), button))
         );
+        list.querySelectorAll("[data-invoice]").forEach((button) => {
+          const order = orders.find((o) => o.id === Number(button.dataset.invoice));
+          if (order) button.addEventListener("click", () => openInvoiceSheet(order));
+        });
       };
 
       const repeatOrder = async (orderId, button) => {

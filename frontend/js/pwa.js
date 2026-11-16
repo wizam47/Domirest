@@ -131,6 +131,12 @@ async function promptInstall() {
   refreshInstallBanners();
 }
 
+/** Abre el instalador nativo o, si no está disponible, la guía paso a paso. */
+export async function installApp() {
+  if (canPromptInstall()) await promptInstall();
+  else openInstallGuide();
+}
+
 export async function copyAppLink(url = appUrl()) {
   try {
     if (navigator.clipboard && window.isSecureContext) {

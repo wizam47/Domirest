@@ -2,8 +2,9 @@
 import random
 from datetime import datetime
 
-from flask import Blueprint, current_app, g, request
+from flask import Blueprint, Response, current_app, g, request
 
+from invoices import build_invoice_pdf, invoice_number, invoice_payload
 from models import Order, OrderItem, Product, User, db, utcnow
 from utils import (
     NEXT_STATUS,
@@ -126,6 +127,43 @@ def order_detail(order_id):
     if not can_access_order(g.user, order):
         return error("No tienes acceso a este pedido", 403)
     return ok(order.to_dict(detail=True))
+
+
+@orders_bp.get("/<int:order_id>/invoice")
+@login_required()
+def order_invoice(order_id):
+    """Datos de la factura para la vista previa en la app."""
+    order = get_order_or_404(order_id)
+    if not order:
+        return error("Pedido no encontrado", 404)
+    if not can_access_order(g.user, order):
+        return error("No tienes acceso a este pedido", 403)
+    if order.payment_status == "cancelado":
+        return error("Este pedido fue cancelado")
+    return ok(invoice_payload(order))
+
+
+@orders_bp.get("/<int:order_id>/invoice.pdf")
+@login_required()
+def order_invoice_pdf(order_id):
+    """PDF de la factura. El cliente solo ve sus pedidos y el admin todos."""
+    order = get_order_or_404(order_id)
+    if not order:
+        return error("Pedido no encontrado", 404)
+    if not can_access_order(g.user, order):
+        return error("No tienes acceso a este pedido", 403)
+    if order.payment_status == "cancelado":
+        return error("Este pedido fue cancelado")
+
+    filename = f"Factura-{invoice_number(order)}.pdf"
+    return Response(
+        build_invoice_pdf(order),
+        mimetype="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 @orders_bp.post("/<int:order_id>/status")

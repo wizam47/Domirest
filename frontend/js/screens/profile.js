@@ -21,7 +21,9 @@ import {
   toast,
 } from "../ui.js";
 import {
+  installApp,
   installBannerHTML,
+  isStandalone,
   openShareSheet,
   shareApp,
 } from "../pwa.js";
@@ -403,6 +405,7 @@ export async function profileScreen() {
         "Acceso rápido para la demo",
         `<span class="badge badge-coral">${ROLE_LABEL[user.role]}</span>`
       )}
+      ${!isStandalone() ? menuItem("install", "download", "Instalar app", "Acceso directo y pantalla completa") : ""}
       ${menuItem("share", "share", "Compartir app", "Envía el enlace a otro celular")}
       ${menuItem("qr", "qr", "Código QR", "Escanea la demo desde otro dispositivo")}
     </div>
@@ -469,6 +472,10 @@ export async function profileScreen() {
         }
         if (kind === "demo") {
           openRoleSheet();
+          return;
+        }
+        if (kind === "install") {
+          installApp();
           return;
         }
         if (kind === "share") {
